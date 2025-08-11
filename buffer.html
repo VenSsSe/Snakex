@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Program</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column; /* Arrange items vertically */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #000;
+            font-family: 'Courier New', Courier, monospace;
+            color: #0f0;
+        }
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            text-shadow: 0 0 15px #0f0;
+            margin-bottom: 40px; /* Space between title and grid */
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        .grid-item {
+            background-color: #111;
+            border: 2px solid #0f0;
+            text-align: center;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .grid-item:hover {
+            background-color: #222;
+            box-shadow: 0 0 15px #0f0;
+            transform: scale(1.05);
+        }
+        .grid-item img {
+            width: 100%;
+            height: 150px; /* Fixed height for images */
+            object-fit: cover; /* Ensure images cover the area */
+            margin-bottom: 10px;
+            background-color: #000; /* Background for transparent images */
+        }
+    </style>
+</head>
+<body>
+    <h1>SYSTEM OFFLINE - SELECT RECOVERY PROGRAM</h1>
+    <div class="grid-container">
+        <div class="grid-item" onclick="window.location.href='snake_game/snake.html'">
+            <img src="images/buffer_icons/Snake.png" alt="Snake Game">
+            <h3>Snake Game</h3>
+        </div>
+        <div class="grid-item">
+            <img src="images/buffer_icons/program1.png" alt="Program 1">
+            <h3>[REDACTED]</h3>
+        </div>
+        <div class="grid-item">
+            <img src="images/buffer_icons/program2.png" alt="Program 2">
+            <h3>[CLASSIFIED]</h3>
+        </div>
+    </div>
+</body>
+</html>
