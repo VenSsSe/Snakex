@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Path</title>
+    <link rel="stylesheet" href="login.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #000;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .pills-container {
+            display: flex;
+            gap: 40px;
+            perspective: 1000px;
+        }
+        .pill {
+            width: 120px;
+            height: 250px;
+            border-radius: 60px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.3), 0 0 50px rgba(255, 255, 255, 0.2) inset;
+        }
+        .pill:hover {
+            transform: rotateY(180deg);
+        }
+        .pill-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 10px black;
+        }
+        .pill-front {
+            background: linear-gradient(145deg, #555, #111);
+            background-image: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 50%);
+        }
+        .pill-back {
+            transform: rotateY(180deg);
+        }
+        .red-pill .pill-back {
+            background: linear-gradient(145deg, #ff4d4d, #b30000);
+            box-shadow: inset 0 0 20px rgba(255, 204, 204, 0.5), 0 0 30px #ff4d4d;
+        }
+        .blue-pill .pill-back {
+            background: linear-gradient(145deg, #4d4dff, #0000b3);
+            box-shadow: inset 0 0 20px rgba(204, 204, 255, 0.5), 0 0 30px #4d4dff;
+        }
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            text-align: center;
+        }
+        .prompt-text {
+            font-size: 2em;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="login-container">
+        <div class="prompt-text">Enter the code to access the system.</div>
+    </div>
+    <script src="matrix.js"></script>
+    <script>
+        let keySequence = '';
+        document.addEventListener('keydown', (e) => {
+            keySequence += e.key;
+            if (keySequence.length > 3) {
+                keySequence = keySequence.slice(-3);
+            }
+            if (keySequence === '404') {
+                window.location.href = 'app.html';
+            }
+        });
+    </script>
+</body>
+</html>
