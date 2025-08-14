@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эмулятор Java Игр</title>
+    <!-- Подключение иконок Font Awesome для более красивых кнопок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Подключение файла стилей -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Основной контейнер приложения -->
+    <div class="main-wrapper">
+
+        <!-- Центральная колонка с эмулятором и кнопками -->
+        <div class="center-column">
+            <h1 class="title">J2ME Web Emulator</h1>
+            
+            <div class="emulator-container">
+                <div id="applet_container">
+                    <div class="status-overlay">
+                        <div id="status-message">Пожалуйста, загрузите JAR-файл</div>
+                        <div id="loader" class="hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="phone-buttons-container">
+                <div class="d-pad">
+                    <button class="phone-button d-pad-up" data-key="ArrowUp" data-keycode="38">▲</button>
+                    <button class="phone-button d-pad-left" data-key="ArrowLeft" data-keycode="37">◄</button>
+                    <button class="phone-button d-pad-center" data-key="Enter" data-keycode="13">OK</button>
+                    <button class="phone-button d-pad-right" data-key="ArrowRight" data-keycode="39">►</button>
+                    <button class="phone-button d-pad-down" data-key="ArrowDown" data-keycode="40">▼</button>
+                </div>
+                <div class="action-buttons">
+                    <button class="phone-button action-button" data-key="SoftLeft" data-keycode="-6">L-Soft</button>
+                    <button class="phone-button action-button" data-key="Clear" data-keycode="8">C</button>
+                    <button class="phone-button action-button" data-key="SoftRight" data-keycode="-7">R-Soft</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Правая колонка с настройками -->
+        <div class="right-column">
+            <div class="controls-container">
+                <div class="header-controls">
+                    <h2><i class="fas fa-cog"></i> Настройки</h2>
+                    <button id="info-btn" class="control-button-icon" title="Показать статус"><i class="fas fa-info-circle"></i></button>
+                </div>
+                
+                <div class="control-group">
+                    <label for="jar-upload" id="jar-upload-label" class="file-upload-label disabled">
+                        <i class="fas fa-upload"></i> Загрузить JAR
+                    </label>
+                    <input type="file" id="jar-upload" accept=".jar" disabled>
+                </div>
+
+                <div class="control-group">
+                    <label for="resolution-select"><i class="fas fa-mobile-screen-button"></i> Разрешение:</label>
+                    <select id="resolution-select">
+                        <option value="240x320" selected>240x320 (QVGA)</option>
+                        <option value="176x220">176x220</option>
+                        <option value="320x480">320x480 (HVGA)</option>
+                        <option value="480x800">480x800 (WVGA)</option>
+                        <option value="custom">Пользовательское</option>
+                    </select>
+                </div>
+                
+                <div id="custom-resolution-fields" class="hidden">
+                    <div class="control-group">
+                        <label for="custom-width">Ширина:</label>
+                        <input type="number" id="custom-width" value="240" min="1">
+                    </div>
+                    <div class="control-group">
+                        <label for="custom-height">Высота:</label>
+                        <input type="number" id="custom-height" value="320" min="1">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="zoom-slider"><i class="fas fa-search-plus"></i> Масштаб: <span id="zoom-value">100%</span></label>
+                    <input type="range" id="zoom-slider" min="50" max="200" value="100">
+                </div>
+
+                <div class="control-group">
+                    <button id="restart-btn" class="control-button hidden"><i class="fas fa-redo"></i> Перезапустить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для информации -->
+    <div id="info-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>Статус Эмулятора</h3>
+            <p id="info-modal-text">Нет информации.</p>
+        </div>
+    </div>
+
+    <!-- ИЗМЕНЕНО: Возвращено подключение CheerpJ из официальной сети CDN -->
+    <script src="https://cjrtnc.leaningtech.com/cj3/cj3.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

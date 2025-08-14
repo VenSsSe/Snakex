@@ -11,8 +11,9 @@
         #game-area {
             width: 540px;
             height: 960px;
+            transition: all 0.3s ease-in-out;
         }
-        .control-btn, .file-upload-label {
+        .control-btn {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -26,12 +27,40 @@
             transition: all 0.2s ease;
             font-size: 18px;
         }
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #4a4a4a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+            width: 60px;
+            height: 60px;
+            aspect-ratio: 1 / 1;
+        }
         .control-btn:hover, .file-upload-label:hover {
             background-color: #6a6a6a;
             transform: scale(1.05);
         }
         .control-btn:active, .file-upload-label:active {
              transform: scale(0.95);
+        }
+
+        #start-btn.start-btn-idle {
+            background-color: #27ae60; /* Green */
+        }
+        #start-btn.start-btn-idle:hover {
+            background-color: #2ecc71;
+        }
+        #start-btn.start-btn-running {
+            background-color: #f39c12; /* Orange */
+        }
+        #start-btn.start-btn-running:hover {
+            background-color: #f1c40f;
         }
         .control-btn:disabled, button:disabled {
             background-color: #3a3a3a !important;
@@ -40,8 +69,8 @@
             transform: none !important;
         }
         .preview-img {
-            width: 100%;
-            height: 40px;
+            width: 60px;
+            height: 60px;
             object-fit: cover;
             border-radius: 8px;
             cursor: pointer;
@@ -51,6 +80,20 @@
         .preview-img.highlighted {
             border-color: red;
         }
+        #game-area.recording-highlight {
+            border-radius: 12px;
+            border: 2px solid #e74c3c !important; /* Red */
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.7);
+        }
+        #game-area.idle-highlight {
+            border: 2px solid #27ae60; /* Green */
+            box-shadow: 0 0 15px rgba(39, 174, 96, 0.5);
+        }
+        #game-area.running-highlight {
+            border: 2px solid #f39c12; /* Orange */
+            box-shadow: 0 0 20px rgba(243, 156, 18, 0.7);
+        }
+        
         #modal {
             position: absolute;
             top: 20px;
@@ -135,11 +178,12 @@
             <!-- Ресурсы -->
             <div>
                 <h4 class="font-semibold mb-2">Ресурсы</h4>
-                <div id="previews" class="grid grid-cols-4 gap-2">
+                <div id="previews" class="grid grid-cols-5 gap-2">
                     <label class="file-upload-label" title="Добавить картинку (нижний слой)"><i class="fas fa-image"></i><input type="file" id="image-upload" class="hidden" accept="image/*,video/*"></label>
                     <label class="file-upload-label" title="Добавить рубашку (верхний слой)"><i class="fas fa-layer-group"></i><input type="file" id="cover-upload" class="hidden" accept="image/*,video/*"></label>
                     <label class="file-upload-label" title="Добавить голову змейки"><i class="fas fa-dragon"></i><input type="file" id="snake-head-upload" class="hidden" accept="image/*"></label>
                     <label class="file-upload-label" title="Добавить ягоду"><i class="fas fa-apple-alt"></i><input type="file" id="berry-upload" class="hidden" accept="image/*"></label>
+                    <button id="reset-resources-btn" title="Сбросить все ресурсы" class="file-upload-label bg-red-800 hover:bg-red-700"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
             <hr class="border-gray-600 my-2">
@@ -204,7 +248,7 @@
 
         <!-- Центральная колонка с игрой -->
         <div id="app-container">
-            <div id="game-area" class="bg-gray-900 rounded-lg relative">
+            <div id="game-area" class="bg-gray-900 rounded-lg relative idle-highlight">
                 <canvas id="game-canvas" class="absolute top-0 left-0 w-full h-full"></canvas>
             </div>
             <div id="modal"></div>

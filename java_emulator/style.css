@@ -1,0 +1,337 @@
+/* Основные стили для страницы */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 1rem 0;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-y: auto;
+}
+
+/* Главный контейнер */
+.main-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 1400px;
+    padding: 20px;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.center-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    order: 1;
+}
+
+.right-column {
+     order: 2;
+}
+
+.left-column {
+    display: none;
+}
+
+.title {
+    color: #4CAF50;
+    font-family: 'Courier New', Courier, monospace;
+    text-shadow: 0 0 5px #4CAF50;
+    margin: 0;
+    text-align: center;
+}
+
+/* Контейнер эмулятора */
+.emulator-container {
+    border: 3px solid #444;
+    background-color: #000;
+    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+    transform-origin: center center;
+    position: relative;
+    overflow: hidden;
+}
+
+#applet_container {
+    position: relative;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Оверлей статуса */
+.status-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #888;
+    z-index: 10;
+    pointer-events: none;
+    text-align: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#status-message {
+    font-size: 1.2em;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #4CAF50;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-top: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Панель управления */
+.controls-container {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #444;
+    width: 280px;
+    box-sizing: border-box;
+}
+
+.header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.controls-container h2 {
+    color: #4CAF50;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.control-button-icon {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0;
+}
+
+.control-button-icon:hover {
+    color: #4CAF50;
+}
+
+.control-group {
+    margin-bottom: 15px;
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+input[type="number"], select {
+    width: 100%;
+    padding: 8px;
+    background-color: #333;
+    border: 1px solid #555;
+    color: #e0e0e0;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input[type="range"] {
+    width: 100%;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.file-upload-label {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+
+.file-upload-label.disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.file-upload-label:not(.disabled):hover {
+    background-color: #45a049;
+}
+
+.control-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s;
+}
+
+.control-button:hover {
+    background-color: #d32f2f;
+}
+
+/* Экранные кнопки */
+.phone-buttons-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 300px;
+    padding: 10px;
+    background: #2a2a2a;
+    border-radius: 10px;
+    border: 1px solid #444;
+    flex-shrink: 0;
+}
+
+.d-pad {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.phone-button {
+    background-color: #444;
+    color: white;
+    border: 1px solid #666;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: background-color 0.1s, transform 0.1s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.phone-button:active {
+    background-color: #666;
+    transform: scale(0.95);
+}
+
+.d-pad-up, .d-pad-down, .d-pad-left, .d-pad-right, .d-pad-center {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.d-pad-up { top: 0; left: 40px; }
+.d-pad-down { bottom: 0; left: 40px; }
+.d-pad-left { top: 40px; left: 0; }
+.d-pad-right { top: 40px; right: 0; }
+.d-pad-center { top: 40px; left: 40px; background-color: #4CAF50; }
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.action-button {
+    width: 80px;
+    height: 40px;
+}
+
+/* Стили модального окна */
+.modal {
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #2a2a2a;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+}
+
+@keyframes animatetop {
+  from {transform: translateY(-50px); opacity: 0}
+  to {transform: translateY(0); opacity: 1}
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h3 {
+    color: #4CAF50;
+    margin-top: 0;
+}
+
+/* Вспомогательные классы */
+.hidden {
+    display: none !important;
+}

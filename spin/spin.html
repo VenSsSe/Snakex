@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Viewer</title>
+    <link rel="stylesheet" href="src/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Боковая панель с 3D-переворотом -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-flipper">
+                <!-- Передняя часть (список сайтов) -->
+                <div class="sidebar-panel sidebar-front">
+                    <div class="sidebar-header">
+                        <h3 class="sidebar-title">Сайты</h3>
+                    </div>
+                    <div class="sidebar-content">
+                        <ul id="siteList" class="site-list">
+                            <!-- Элементы списка будут добавлены с помощью JavaScript -->
+                        </ul>
+                    </div>
+                    <div class="sidebar-footer">
+                        <button id="settingsBtn" class="btn btn-icon">⚙️ Настройки</button>
+                    </div>
+                </div>
+
+                <!-- Задняя часть (настройки) -->
+                <div class="sidebar-panel sidebar-back">
+                    <div class="sidebar-header">
+                        <h3 class="sidebar-title">Настройки</h3>
+                    </div>
+                    <div class="sidebar-content">
+                        <div class="setting">
+                            <label>Формат видео</label>
+                            <button id="toggleVideoFormatBtn" class="btn">MP4</button>
+                        </div>
+                        <div class="setting">
+                            <label for="demoResolutionSelect">Разрешение демо</label>
+                            <select id="demoResolutionSelect" class="select-css">
+                                <option value="1280x720">HD (720p)</option>
+                                <option value="1920x1080" selected>Full HD (1080p)</option>
+                                <option value="2560x1440">2K (1440p)</option>
+                                <option value="3840x2160">4K (2160p)</option>
+                                <option value="7680x4320">8K (4320p)</option>
+                            </select>
+                        </div>
+                        <!-- [ИЗМЕНЕНО] Добавлен переключатель задержки -->
+                        <div class="setting">
+                            <label for="toggleCountdownBtn">Задержка 3 сек.</label>
+                            <button id="toggleCountdownBtn" class="btn">Вкл</button>
+                        </div>
+                        <div class="setting">
+                            <label>Предпросмотр</label>
+                            <button id="showDemoBtn" class="btn">Демо</button>
+                        </div>
+                    </div>
+                    <div class="sidebar-footer">
+                        <button id="toListBtn" class="btn btn-icon">⬅️ К списку сайтов</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Основная часть приложения -->
+        <main id="mainContent" class="main-content">
+            <!-- Верхняя панель управления -->
+            <header class="controls-header">
+                <div class="url-loader">
+                    <input type="url" id="urlInput" placeholder="https://example.com">
+                    <button id="loadBtn" class="btn btn-primary">Загрузить</button>
+                </div>
+            </header>
+
+            <!-- Статусное сообщение для пользователя -->
+            <div id="statusMessage" class="status-message">
+                Введите URL-адрес сайта и нажмите "Загрузить".
+            </div>
+
+            <!-- Контейнер для отображения сайта -->
+            <div id="iframeContainer" class="iframe-container">
+                <!-- Iframe будет добавлен сюда с помощью JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Экран для записи (демо) -->
+    <div id="recordingView" class="recording-view hidden">
+        <div class="recording-view-content">
+            <div class="recording-view-header">
+                 <h2>Предпросмотр Записи</h2>
+                 <button id="closeRecordingViewBtn" class="close-btn">&times;</button>
+            </div>
+            <p>Именно этот контент будет записан в итоговое видео.</p>
+            <div id="recordingViewIframeWrapper">
+                <div id="recordingViewIframeContainer" class="iframe-container">
+                    <!-- Сюда будет добавлен iframe для демонстрации -->
+                </div>
+            </div>
+            <div class="recording-view-footer">
+                <div class="recording-controls">
+                    <button id="recordBtn" class="btn btn-record">Запись</button>
+                    <button id="pauseBtn" class="btn btn-secondary hidden">Пауза</button>
+                    <button id="stopBtn" class="btn btn-danger hidden">Стоп</button>
+                    <button id="downloadBtn" class="btn btn-download hidden">Скачать</button>
+                    <span id="timer" class="timer hidden">00:00:00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Оверлей для обратного отсчета -->
+    <div id="countdownOverlay" class="countdown-overlay hidden">
+        <span id="countdownText">3</span>
+    </div>
+
+    <!-- Подключение скриптов -->
+    <script type="module" src="src/js/main.js"></script>
+</body>
+</html>
