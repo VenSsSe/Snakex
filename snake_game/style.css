@@ -3,86 +3,143 @@ body {
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #1a1a1a;
-            font-family: 'Inter', sans-serif;
-            padding: 1rem; 
+            background-color: #000000; /* Black background */
+            font-family: 'monospace', 'Courier New', Courier, monospace; /* Monospace font */
+            padding: 1rem;
         }
-        #app-container {
+        #game-area {
             width: 540px;
-            height: 540px;
-            background-color: #2c2c2c;
-            display: flex;
-            flex-direction: column;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            overflow: hidden;
-            position: relative;
-            padding: 10px;
+            height: 960px;
+            transition: all 0.3s ease-in-out;
         }
-        .control-btn, .file-upload-label {
+        .control-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
+            width: 100%;
             height: 40px;
-            background-color: #4a4a4a;
-            color: white;
-            border: none;
-            border-radius: 8px;
+            background-color: #003300; /* Dark green */
+            color: #00ff00; /* Bright green text */
+            border: 1px solid #00ff00; /* Bright green border */
+            border-radius: 4px; /* Slightly sharper corners */
             cursor: pointer;
             transition: all 0.2s ease;
             font-size: 18px;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* Subtle green glow */
+        }
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #003300; /* Dark green */
+            color: #00ff00; /* Bright green */
+            border: 1px solid #00ff00; /* Bright green border */
+            border-radius: 4px; /* Slightly sharper corners */
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+            width: 60px;
+            height: 60px;
+            aspect-ratio: 1 / 1;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* Subtle green glow */
         }
         .control-btn:hover, .file-upload-label:hover {
-            background-color: #6a6a6a;
-            transform: scale(1.05);
+            background-color: #004400; /* Slightly lighter green on hover */
+            transform: scale(1.02); /* Less aggressive scale */
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.8); /* Stronger glow on hover */
         }
         .control-btn:active, .file-upload-label:active {
-             transform: scale(0.95);
+             transform: scale(0.98); /* Less aggressive scale */
         }
         .control-btn:disabled, button:disabled {
-            background-color: #3a3a3a !important;
-            color: #777 !important;
+            background-color: #111111 !important; /* Darker disabled background */
+            color: #006600 !important; /* Darker green text for disabled */
             cursor: not-allowed !important;
             transform: none !important;
+            box-shadow: none !important;
         }
         .preview-img {
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 4px; /* Sharper corners */
             cursor: pointer;
-            border: 2px solid transparent;
-            transition: border-color 0.2s;
+            border: 2px solid #00ff00; /* Bright green border */
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* Subtle green glow */
         }
         .preview-img.highlighted {
-            border-color: red;
+            border-color: #ff0000; /* Keep red for highlight, or change to a Matrix-like error color */
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8); /* Red glow for highlight */
+        }
+        #start-btn.start-btn-idle {
+            background-color: #006600; /* Darker green for idle */
+            border-color: #00ff00;
+        }
+        #start-btn.start-btn-idle:hover {
+            background-color: #008800; /* Lighter green on hover */
+        }
+        #start-btn.start-btn-running {
+            background-color: #880000; /* Reddish for running (alert) */
+            border-color: #ff0000;
+        }
+        #start-btn.start-btn-running:hover {
+            background-color: #aa0000;
+        }
+        #game-area.recording-highlight {
+            border-radius: 8px; /* Sharper corners */
+            border: 2px solid #ff0000 !important; /* Red for recording */
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+        }
+        #game-area.idle-highlight {
+            border: 2px solid #00ff00; /* Bright green for idle */
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+        #game-area.running-highlight {
+            border: 2px solid #ffff00; /* Yellow for running (warning) */
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.7);
         }
         #modal {
             position: absolute;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #3498db;
-            color: white;
+            background-color: #003300; /* Dark green modal */
+            color: #00ff00; /* Bright green text */
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 4px;
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.5s, top 0.5s;
             pointer-events: none;
+            border: 1px solid #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
         }
         #modal.show {
             opacity: 1;
             top: 30px;
         }
-        .side-panel {
-            height: 540px;
-            flex-shrink: 0;
-        }
-        #mechanics-panel {
+        .back-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #003300; /* Dark green */
+            color: #00ff00; /* Bright green */
+            border-radius: 50%;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 1rem;
+            justify-content: center;
+            font-size: 24px;
+            text-decoration: none;
+            z-index: 1001;
+            transition: all 0.2s ease;
+            border: 1px solid #00ff00;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+        .back-button:hover {
+            background-color: #004400;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
         }
