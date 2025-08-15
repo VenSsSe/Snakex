@@ -3,7 +3,7 @@ export const ALLOWED_DOMAINS = [
     'hsr.wishsimulator.app',
 ];
 
-export const DOMAIN_ICONS = {
-    'wishsimulator.app': 'https://wishsimulator.app/favicon.ico',
-    'hsr.wishsimulator.app': 'https://hsr.wishsimulator.app/favicon.ico',
-};
+export const DOMAIN_ICONS = ALLOWED_DOMAINS.reduce((acc, domain) => {
+    acc[domain] = `https://${domain}/favicon.ico`;
+    return acc;
+}, {});

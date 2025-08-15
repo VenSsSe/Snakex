@@ -5,23 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Program</title>
     <style>
+        :root {
+            --main-color: #0f0;
+            --bg-color: #000;
+            --component-bg: #111;
+        }
+
         body {
             display: flex;
-            flex-direction: column; /* Arrange items vertically */
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #000;
+            background-color: var(--bg-color);
             font-family: 'Courier New', Courier, monospace;
-            color: #0f0;
+            color: var(--main-color);
         }
+
         h1 {
             text-align: center;
             font-size: 3em;
-            text-shadow: 0 0 15px #0f0;
-            margin-bottom: 40px; /* Space between title and grid */
+            text-shadow: 0 0 15px var(--main-color);
+            margin-bottom: 40px;
         }
+
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -30,43 +38,268 @@
             width: 100%;
             max-width: 1200px;
         }
+
         .grid-item {
-            background-color: #111;
-            border: 2px solid #0f0;
-            text-align: center;
-            padding: 20px;
-            cursor: pointer;
+            background-color: var(--component-bg);
+            border: 2px solid var(--main-color);
             transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
+
+        .program-link {
+            cursor: pointer;
+            flex-grow: 1;
+            padding: 20px;
+            text-align: center;
+        }
+
         .grid-item:hover {
             background-color: #222;
-            box-shadow: 0 0 15px #0f0;
+            box-shadow: 0 0 15px var(--main-color);
             transform: scale(1.05);
         }
+
         .grid-item img {
             width: 100%;
-            height: 150px; /* Fixed height for images */
-            object-fit: cover; /* Ensure images cover the area */
+            height: 150px;
+            object-fit: cover;
             margin-bottom: 10px;
-            background-color: #000; /* Background for transparent images */
+            background-color: var(--bg-color);
+        }
+
+        .guide-button {
+            background-color: var(--main-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 8px 12px;
+            cursor: help;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* --- OVERLAY STYLES --- */
+        #guide-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: var(--main-color);
+            display: none; /* Initially hidden */
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #guide-main-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #guide-top-panel {
+            display: flex;
+            gap: 20px;
+            flex-shrink: 0;
+            height: 200px; /* Fixed height for the top panel */
+        }
+
+        #guide-info-left {
+            width: 200px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        #guide-program-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border: 2px solid var(--main-color);
+        }
+        
+        #guide-program-title {
+            margin-top: 10px;
+            font-size: 1.2em;
+        }
+
+        #guide-text-container {
+            flex-grow: 1;
+            border: 2px solid var(--main-color);
+            background-color: var(--component-bg);
+            padding: 15px;
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        #guide-content {
+            white-space: pre-wrap;
+            margin: 0;
+            font-family: inherit;
+            color: inherit;
+        }
+
+        #guide-iframe-container {
+            flex-grow: 1;
+            background-color: #000;
+            border: 2px solid var(--main-color);
+            overflow: hidden;
+            position: relative; /* Added for positioning the blocker */
+        }
+
+        #guide-program-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* NEW: This div covers the iframe to block clicks */
+        #guide-iframe-blocker {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+            z-index: 1; /* Sits on top of the iframe */
+        }
+
+        #guide-close-button {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--main-color);
+            font-size: 2.5em;
+            cursor: pointer;
+            line-height: 1;
+            z-index: 2; /* Sits on top of the blocker */
         }
     </style>
 </head>
 <body>
     <h1>SYSTEM OFFLINE - SELECT RECOVERY PROGRAM</h1>
     <div class="grid-container">
-        <div class="grid-item" onclick="window.location.href='snake_game/snake.html'">
-            <img src="images/buffer_icons/Snake.png" alt="Snake Game">
-            <h3>Snake Game</h3>
+        <!-- Items are the same -->
+        <div class="grid-item" data-program-name="Snake Game">
+            <div class="program-link" onclick="window.location.href='snake_game/snake.html'">
+                <img src="images/buffer_icons/Snake.png" alt="Snake Game">
+                <h3>Snake Game</h3>
+            </div>
+            <button class="guide-button">гайд</button>
         </div>
-        <div class="grid-item" onclick="window.location.href='java_emulator/emulator.html'">
-            <img src="images/buffer_icons/Java.png" alt="Java Emulator">
-            <h3>Java Emulator</h3>
+        <div class="grid-item" data-program-name="Java Emulator">
+            <div class="program-link" onclick="window.location.href='java_emulator/emulator.html'">
+                <img src="images/buffer_icons/Java.png" alt="Java Emulator">
+                <h3>Java Emulator</h3>
+            </div>
+            <button class="guide-button">гайд</button>
+        </div>
+        <div class="grid-item" data-program-name="Spin">
+            <div class="program-link" onclick="window.location.href='spin/spin.html'">
+                <img src="images/buffer_icons/spin.png" alt="Spin">
+                <h3>Spin</h3>
+            </div>
+            <button class="guide-button">гайд</button>
         </div>
         <div class="grid-item">
-            <img src="images/buffer_icons/program2.png" alt="Program 2">
-            <h3>[CLASSIFIED]</h3>
+             <div class="program-link">
+                <img src="images/buffer_icons/coming_soon.png" alt="coming soon">
+                <h3>coming soon</h3>
+            </div>
         </div>
     </div>
+
+    <!-- UPDATED OVERLAY STRUCTURE -->
+    <div id="guide-overlay">
+        <button id="guide-close-button">&times;</button>
+        <div id="guide-main-content">
+            <div id="guide-top-panel">
+                <div id="guide-info-left">
+                    <img id="guide-program-image" src="" alt="Program Image">
+                    <h3 id="guide-program-title"></h3>
+                </div>
+                <div id="guide-text-container">
+                    <pre id="guide-content"></pre>
+                </div>
+            </div>
+            <div id="guide-iframe-container">
+                <iframe id="guide-program-iframe" src=""></iframe>
+                <div id="guide-iframe-blocker"></div> <!-- NEW: Click blocker -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM ELEMENT REFERENCES ---
+        const guideOverlay = document.getElementById('guide-overlay');
+        const guideContent = document.getElementById('guide-content');
+        const guideButtons = document.querySelectorAll('.guide-button');
+        const guideCloseButton = document.getElementById('guide-close-button');
+        const guideProgramImage = document.getElementById('guide-program-image');
+        const guideProgramTitle = document.getElementById('guide-program-title');
+        const guideProgramIframe = document.getElementById('guide-program-iframe');
+        
+        const guides = {};
+
+        // --- PRE-FETCH GUIDES ---
+        (async () => {
+            const gridItems = document.querySelectorAll('.grid-item[data-program-name]');
+            for (const item of gridItems) {
+                const programName = item.dataset.programName;
+                if (programName) {
+                    try {
+                        const response = await fetch(`guides/${programName}.txt`);
+                        guides[programName] = response.ok ? await response.text() : 'Guide not found.';
+                    } catch (error) {
+                        console.error('Error fetching guide:', error);
+                        guides[programName] = 'Error loading guide.';
+                    }
+                }
+            }
+        })();
+
+        // --- EVENT LISTENERS ---
+        guideButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.stopPropagation();
+                
+                const gridItem = button.closest('.grid-item');
+                const programName = gridItem.dataset.programName;
+                const programImage = gridItem.querySelector('img');
+                const programLink = gridItem.querySelector('.program-link');
+
+                if (!programName || !programImage || !programLink) return;
+
+                // Extract URL from the onclick attribute to load in the iframe
+                const onclickAttr = programLink.getAttribute('onclick');
+                const urlMatch = onclickAttr.match(/window\.location\.href='([^']*)'/);
+                const programUrl = urlMatch ? urlMatch[1] : '';
+
+                // Populate and show the overlay
+                guideProgramImage.src = programImage.src;
+                guideProgramTitle.textContent = programName;
+                guideContent.textContent = guides[programName] || 'Loading guide...';
+                guideProgramIframe.src = programUrl;
+                
+                guideOverlay.style.display = 'block';
+            });
+        });
+
+        // Close overlay with the button
+        guideCloseButton.addEventListener('click', () => {
+            guideOverlay.style.display = 'none';
+            // Clear the iframe src to stop the program from running in the background
+            guideProgramIframe.src = 'about:blank'; 
+        });
+    </script>
 </body>
 </html>

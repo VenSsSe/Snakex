@@ -1,5 +1,5 @@
-import { appSettings } from '../settings.js';
-import { showRecordingView, hideRecordingView } from '../components/recorder_view.js';
+import { appSettings } from '../rec.js';
+import { addRecording } from '../history.js';
 
 export let isRecording = false;
 let isPaused = false;
@@ -12,25 +12,67 @@ let mediaStream;
 let actualMimeType = '';
 let downloadHandler = null;
 
-const recordBtn = document.getElementById('recordBtn');
-const pauseBtn = document.getElementById('pauseBtn');
-const stopBtn = document.getElementById('stopBtn');
-const downloadBtn = document.getElementById('downloadBtn');
-const timer = document.getElementById('timer');
+const recordBtnSettings = document.getElementById('recordBtnSettings');
+const pauseBtnSettings = document.getElementById('pauseBtnSettings');
+const stopBtnSettings = document.getElementById('stopBtnSettings');
+const downloadBtnSettings = document.getElementById('downloadBtnSettings');
+const timerSettings = document.getElementById('timerSettings');
+
 const countdownOverlay = document.getElementById('countdownOverlay');
 const countdownText = document.getElementById('countdownText');
 const iframeContainer = document.getElementById('iframeContainer');
 
-function setStatusMessage(message, type = 'default') {
-    const statusMessage = document.getElementById('statusMessage');
-    statusMessage.textContent = message;
-    statusMessage.className = 'status-message';
-    if (type === 'error') statusMessage.classList.add('status-error');
-    else if (type === 'success') statusMessage.classList.add('status-success');
-    else if (type === 'info') statusMessage.classList.add('status-info');
+function updateRECButton(isRecording) {
+    if (isRecording) {
+        recordBtnSettings.classList.add('btn-record-active');
+        recordBtnSettings.textContent = 'Идет запись';
+    } else {
+        recordBtnSettings.classList.remove('btn-record-active');
+        recordBtnSettings.textContent = 'Запись';
+    }
 }
 
-function handleRecordingAttempt() {
+function updatePauseButton(isPaused) {
+    if (isPaused) {
+        pauseBtnSettings.textContent = 'Продолжить';
+    } else {
+        pauseBtnSettings.textContent = 'Пауза';
+    }
+}
+
+function showPauseButton() {
+    pauseBtnSettings.classList.remove('hidden');
+}
+
+function hidePauseButton() {
+    pauseBtnSettings.classList.add('hidden');
+}
+
+function showStopButton() {
+    stopBtnSettings.classList.remove('hidden');
+}
+
+function hideStopButton() {
+    stopBtnSettings.classList.add('hidden');
+}
+
+function showDownloadButton() {
+    downloadBtnSettings.classList.remove('hidden');
+}
+
+function hideDownloadButton() {
+    downloadBtnSettings.classList.add('hidden');
+}
+
+function showTimer() {
+    timerSettings.classList.remove('hidden');
+}
+
+function hideTimer() {
+    timerSettings.classList.add('hidden');
+}
+
+async function handleRecordingAttempt() {
     if (isRecording) {
         stopRecording();
         return;
@@ -38,23 +80,13 @@ function handleRecordingAttempt() {
 
     const isSiteLoaded = !!iframeContainer.querySelector('iframe');
     if (!isSiteLoaded) {
-        alert('Сначала загрузите сайт, чтобы открыть предпросмотр.');
+        alert('Сначала загрузите сайт, чтобы начать запись.');
         return;
     }
 
-    if (typeof hideRecordingView === 'function') {
-        hideRecordingView();
-    }
-
-    initiateRecordingSequence();
-}
-
-async function initiateRecordingSequence() {
-    let capturedStream;
-
     try {
-        const [width, height] = appSettings.demoResolution.split('x').map(Number);
-        capturedStream = await navigator.mediaDevices.getDisplayMedia({
+        const [width, height] = appSettings.resolution.split('x').map(Number);
+        const capturedStream = await navigator.mediaDevices.getDisplayMedia({
             video: {
                 width: { ideal: width, max: width },
                 height: { ideal: height, max: height },
@@ -62,20 +94,14 @@ async function initiateRecordingSequence() {
             },
             audio: true
         });
-    } catch (err) {
-        console.error("Ошибка при запросе захвата экрана:", err);
-        setStatusMessage('Вы отменили или не смогли начать захват экрана.', 'error');
-        return;
-    }
 
-    const mainIframe = iframeContainer.querySelector('iframe');
-    if (!mainIframe) {
-        alert('Не найден iframe для записи.');
-        capturedStream.getTracks().forEach(track => track.stop());
-        return;
-    }
+        const mainIframe = iframeContainer.querySelector('iframe');
+        if (!mainIframe) {
+            alert('Не найден iframe для записи.');
+            capturedStream.getTracks().forEach(track => track.stop());
+            return;
+        }
 
-    try {
         await mainIframe.requestFullscreen();
 
         if (appSettings.countdownEnabled) {
@@ -83,11 +109,9 @@ async function initiateRecordingSequence() {
         } else {
             startRecording(capturedStream);
         }
-
     } catch (err) {
-        console.error("Не удалось войти в полноэкранный режим:", err);
-        setStatusMessage('Ошибка: не удалось перейти в полноэкранный режим.', 'error');
-        capturedStream.getTracks().forEach(track => track.stop());
+        console.error("Ошибка при захвате экрана или входе в полноэкранный режим:", err);
+        setStatusMessage('Вы отменили, не смогли начать захват экрана или войти в полноэкранный режим.', 'error');
     }
 }
 
@@ -115,7 +139,7 @@ async function startRecording(stream) {
     mediaStream = stream;
 
     try {
-        const [width, height] = appSettings.demoResolution.split('x').map(Number);
+        const [width, height] = appSettings.resolution.split('x').map(Number);
         const getBitrate = (h) => {
             if (h >= 4320) return 80000000;
             if (h >= 2160) return 40000000;
@@ -149,21 +173,23 @@ async function startRecording(stream) {
             const blob = new Blob(recordedChunks, { type: actualMimeType });
             const url = URL.createObjectURL(blob);
             const fileExtension = actualMimeType.split('/')[1].split(';')[0];
+            const fileName = `recording-${new Date().toISOString()}.${fileExtension}`;
+
+            addRecording(blob, fileName);
 
             downloadHandler = () => {
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `recording-${new Date().toISOString()}.${fileExtension}`;
+                a.download = fileName;
                 document.body.appendChild(a);
                 a.click();
                 setTimeout(() => {
                     document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
+                    // Don't revoke URL here, it's used by the history
                 }, 100);
-                downloadHandler = null;
             };
 
-            downloadBtn.classList.remove('hidden');
+            showDownloadButton();
         };
 
         mediaStream.getVideoTracks()[0].onended = () => stopRecording();
@@ -173,12 +199,11 @@ async function startRecording(stream) {
         isRecording = true;
         isPaused = false;
 
-        recordBtn.classList.add('btn-record-active');
-        recordBtn.textContent = 'Идет запись';
-        pauseBtn.classList.remove('hidden');
-        stopBtn.classList.remove('hidden');
-        timer.classList.remove('hidden');
-        downloadBtn.classList.add('hidden');
+        updateRECButton(true);
+        showPauseButton();
+        showStopButton();
+        showTimer();
+        hideDownloadButton();
 
         startTime = Date.now() - elapsedTime;
         timerInterval = setInterval(updateTimer, 1000);
@@ -198,18 +223,17 @@ function togglePause() {
     if (!mediaRecorder) return;
 
     isPaused = !isPaused;
+    updatePauseButton(isPaused);
+    updateRECButton(!isPaused);
+
     if (isPaused) {
         mediaRecorder.pause();
         clearInterval(timerInterval);
         elapsedTime = Date.now() - startTime;
-        pauseBtn.textContent = 'Продолжить';
-        recordBtn.classList.remove('btn-record-active');
     } else {
         mediaRecorder.resume();
         startTime = Date.now() - elapsedTime;
         timerInterval = setInterval(updateTimer, 1000);
-        pauseBtn.textContent = 'Пауза';
-        recordBtn.classList.add('btn-record-active');
     }
 }
 
@@ -225,10 +249,6 @@ export function stopRecording() {
     }
 
     resetRecordingUI();
-
-    if (typeof showRecordingView === 'function') {
-        showRecordingView();
-    }
 }
 
 function resetRecordingUI() {
@@ -237,11 +257,10 @@ function resetRecordingUI() {
     clearInterval(timerInterval);
     elapsedTime = 0;
 
-    recordBtn.classList.remove('btn-record-active');
-    recordBtn.textContent = 'Запись';
-    pauseBtn.classList.add('hidden');
-    stopBtn.classList.add('hidden');
-    timer.classList.add('hidden');
+    updateRECButton(false);
+    hidePauseButton();
+    hideStopButton();
+    hideTimer();
     updateTimer();
 }
 
@@ -252,19 +271,22 @@ function updateTimer() {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
     const formatTime = (num) => num.toString().padStart(2, '0');
-    timer.textContent = `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
+    const timeString = `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
+    timerSettings.textContent = timeString;
 }
 
 export function initRecorder() {
-    recordBtn.addEventListener('click', handleRecordingAttempt);
-    pauseBtn.addEventListener('click', togglePause);
-    stopBtn.addEventListener('click', stopRecording);
+    recordBtnSettings.addEventListener('click', handleRecordingAttempt);
+    pauseBtnSettings.addEventListener('click', togglePause);
+    stopBtnSettings.addEventListener('click', stopRecording);
 
-    downloadBtn.addEventListener('click', () => {
+    const downloadFn = () => {
         if (typeof downloadHandler === 'function') {
             downloadHandler();
         }
-    });
+    };
+
+    downloadBtnSettings.addEventListener('click', downloadFn);
 
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement && isRecording) {

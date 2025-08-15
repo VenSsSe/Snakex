@@ -1,7 +1,7 @@
 import { setStatusMessage } from './ui.js';
+import { stopRecording, isRecording } from './lib/recorder.js';
 
 const iframeContainer = document.getElementById('iframeContainer');
-const recordingViewIframeContainer = document.getElementById('recordingViewIframeContainer');
 
 let isSiteLoaded = false;
 
@@ -9,7 +9,7 @@ export function createAndLoadIframe(container, url, isMain) {
     if (!container) return;
     const iframe = document.createElement('iframe');
     iframe.src = url;
-    iframe.allow = "camera *; microphone *; autoplay";
+    iframe.allow = "camera *; microphone *; autoplay; fullscreen *;";
     iframe.onload = () => {
         if (isMain) {
             const domain = new URL(url).hostname.replace(/^www\./, '');
@@ -37,7 +37,6 @@ export function loadSite(ALLOWED_DOMAINS) {
         if (ALLOWED_DOMAINS.includes(domain)) {
             resetSite();
             createAndLoadIframe(iframeContainer, url, true);
-            createAndLoadIframe(recordingViewIframeContainer, url, false);
             isSiteLoaded = true;
             loadBtn.textContent = 'Сброс';
             urlInput.disabled = true;
@@ -52,24 +51,14 @@ export function loadSite(ALLOWED_DOMAINS) {
 export function resetSite() {
     const urlInput = document.getElementById('urlInput');
     const loadBtn = document.getElementById('loadBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
 
     iframeContainer.innerHTML = '';
-    if (recordingViewIframeContainer) {
-        recordingViewIframeContainer.innerHTML = '';
-    }
     isSiteLoaded = false;
     loadBtn.textContent = 'Загрузить';
     urlInput.disabled = false;
     urlInput.value = '';
     setStatusMessage('Введите URL-адрес сайта и нажмите "Загрузить".', 'default');
-    if (window.isRecording) window.stopRecording();
-    downloadBtn.classList.add('hidden');
-    window.downloadHandler = null;
-    window.actualMimeType = '';
-    if (typeof hideRecordingView === 'function') {
-        hideRecordingView();
-    }
+    if (isRecording) stopRecording();
 }
 
 export function getIsSiteLoaded() {

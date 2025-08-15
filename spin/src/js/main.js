@@ -1,9 +1,9 @@
 import { initRecorder } from './lib/recorder.js';
-import { initSettings } from './settings.js';
+import { initRec } from './rec.js';
 import { initUI, populateSiteList } from './ui.js';
 import { loadSite, resetSite, getIsSiteLoaded } from './iframe.js';
-import { ALLOWED_DOMAINS, DOMAIN_ICONS } from './whitelist.js';
-import { initRecorderView, showRecordingView, hideRecordingView, applyDemoResolution } from './components/recorder_view.js';
+import { initDB } from './history.js';
+import { ALLOWED_DOMAINS, DOMAIN_ICONS } from './whitelist.js'; // Added this line
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize UI components
@@ -17,11 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
     populateSiteList(ALLOWED_DOMAINS, DOMAIN_ICONS, () => loadSite(ALLOWED_DOMAINS));
 
     // Initialize settings
-    initSettings(showRecordingView, applyDemoResolution);
-
-    // Initialize recorder view
-    initRecorderView();
+    initRec();
 
     // Initialize recorder
     initRecorder();
+
+    // Initialize DB
+    initDB();
 });
