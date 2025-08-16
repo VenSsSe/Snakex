@@ -3,370 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Приложение-змейка с эффектом объема</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        /* Стили для игрового поля и элементов управления */
-        #game-area {
-            width: 540px;
-            height: 960px;
-            transition: all 0.3s ease-in-out;
-        }
-        .control-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 40px;
-            background-color: #4a4a4a;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 18px;
-        }
-        .file-upload-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #4a4a4a;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 18px;
-            width: 60px;
-            height: 60px;
-            aspect-ratio: 1 / 1;
-        }
-        .control-btn:hover, .file-upload-label:hover {
-            background-color: #6a6a6a;
-            transform: scale(1.05);
-        }
-        .control-btn:active, .file-upload-label:active {
-             transform: scale(0.95);
-        }
-
-        #start-btn.start-btn-idle {
-            background-color: #27ae60; /* Green */
-        }
-        #start-btn.start-btn-idle:hover {
-            background-color: #2ecc71;
-        }
-        #start-btn.start-btn-running {
-            background-color: #f39c12; /* Orange */
-        }
-        #start-btn.start-btn-running:hover {
-            background-color: #f1c40f;
-        }
-        .control-btn:disabled, button:disabled {
-            background-color: #3a3a3a !important;
-            color: #777 !important;
-            cursor: not-allowed !important;
-            transform: none !important;
-        }
-        .preview-img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: border-color 0.2s;
-        }
-        .preview-img.highlighted {
-            border-color: red;
-        }
-        #game-area.recording-highlight {
-            border-radius: 12px;
-            border: 2px solid #e74c3c !important; /* Red */
-            box-shadow: 0 0 20px rgba(231, 76, 60, 0.7);
-        }
-        #game-area.idle-highlight {
-            border: 2px solid #27ae60; /* Green */
-            box-shadow: 0 0 15px rgba(39, 174, 96, 0.5);
-        }
-        #game-area.running-highlight {
-            border: 2px solid #f39c12; /* Orange */
-            box-shadow: 0 0 20px rgba(243, 156, 18, 0.7);
-        }
-        
-        #modal {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.5s, top 0.5s;
-            pointer-events: none;
-        }
-        #modal.show {
-            opacity: 1;
-            top: 30px;
-        }
-        .back-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background-color: #4a4a4a;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            text-decoration: none;
-            z-index: 1001;
-            transition: all 0.2s ease;
-        }
-        .back-button:hover {
-            background-color: #6a6a6a;
-            transform: scale(1.1);
-        }
-    </style>
+    <title>Snake Game - Redesign</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="bg-black flex items-center justify-center min-h-screen p-4">
-
+<body>
+    <canvas id="matrix-canvas"></canvas>
     <a href="../buffer.html" class="back-button" title="К выбору игр">
         <i class="fas fa-times"></i>
     </a>
 
-    <div class="flex flex-row items-start justify-center w-full max-w-7xl gap-4">
-
-        <!-- Левая колонка -->
-        <div id="left-column" class="flex flex-col gap-4 p-4 bg-[#001100] rounded-lg text-[#00ff00] w-[380px]">
-            <!-- Управление -->
-            <h3 class="font-bold text-lg text-center">Управление</h3>
-            <div class="flex flex-row gap-4">
-                <div class="flex-1">
-                    <h4 class="font-semibold mb-2">Действия</h4>
+    <div class="app-container">
+        <!-- Левая боковая панель -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3 class="sidebar-title">SNAKE_GAME.EXE</h3>
+            </div>
+            <div class="sidebar-content">
+                <!-- Управление -->
+                <div class="setting-group">
+                    <h4 class="setting-title">Управление</h4>
                     <div class="grid grid-cols-2 gap-2">
-                        <button id="start-btn" title="Старт" class="control-btn"><i class="fas fa-play"></i></button>
-                        <button id="stop-btn" title="Стоп" class="control-btn"><i class="fas fa-stop"></i></button>
-                        <button id="reset-btn" title="Сброс" class="control-btn"><i class="fas fa-sync-alt"></i></button>
-                        <button id="record-btn" title="Запись" class="control-btn"><i class="fas fa-circle text-red-500"></i></button>
+                        <button id="start-btn" title="Старт" class="btn btn-icon"><i class="fas fa-play"></i> Старт</button>
+                        <button id="stop-btn" title="Стоп" class="btn btn-icon"><i class="fas fa-stop"></i> Стоп</button>
+                        <button id="reset-btn" title="Сброс" class="btn btn-icon"><i class="fas fa-sync-alt"></i> Сброс</button>
+                        <button id="record-btn" title="Запись" class="btn btn-icon btn-record"><i class="fas fa-circle"></i> REC</button>
                     </div>
                 </div>
-                <div class="flex-1">
-                    <h4 class="font-semibold mb-2">Эффект "просвета"</h4>
-                    <div class="flex flex-col gap-2 text-sm">
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="toggle-head" class="form-checkbox h-4 w-4 bg-gray-700 border-[#006600] rounded text-blue-500 focus:ring-[#00ff00]" checked>
-                            <label for="toggle-head">Просвет головы</label>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="toggle-berries" class="form-checkbox h-4 w-4 bg-gray-700 border-[#006600] rounded text-blue-500 focus:ring-[#00ff00]" checked>
-                            <label for="toggle-berries">Просвет ягод</label>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="toggle-tail" class="form-checkbox h-4 w-4 bg-gray-700 border-[#006600] rounded text-blue-500 focus:ring-[#00ff00]" checked>
-                            <label for="toggle-tail">Просвет хвоста</label>
-                        </div>
-                    </div>
+                 <!-- Эффект "просвета" -->
+                <div class="setting-group">
+                     <h4 class="setting-title">Эффект "просвета"</h4>
+                     <div class="setting">
+                         <label for="toggle-head">Голова</label>
+                         <input type="checkbox" id="toggle-head" class="checkbox-css" checked>
+                     </div>
+                     <div class="setting">
+                         <label for="toggle-berries">Ягоды</label>
+                         <input type="checkbox" id="toggle-berries" class="checkbox-css" checked>
+                     </div>
+                     <div class="setting">
+                         <label for="toggle-tail">Хвост</label>
+                         <input type="checkbox" id="toggle-tail" class="checkbox-css" checked>
+                     </div>
                 </div>
-            </div>
-            <!-- Ресурсы -->
-            <div>
-                <h4 class="font-semibold mb-2">Ресурсы</h4>
-                <div id="previews" class="grid grid-cols-5 gap-2">
-                    <label class="file-upload-label" title="Добавить картинку (нижний слой)"><i class="fas fa-image"></i><input type="file" id="image-upload" class="hidden" accept="image/*,video/*"></label>
-                    <label class="file-upload-label" title="Добавить рубашку (верхний слой)"><i class="fas fa-layer-group"></i><input type="file" id="cover-upload" class="hidden" accept="image/*,video/*"></label>
-                    <label class="file-upload-label" title="Добавить голову змейки"><i class="fas fa-dragon"></i><input type="file" id="snake-head-upload" class="hidden" accept="image/*"></label>
-                    <label class="file-upload-label" title="Добавить ягоду"><i class="fas fa-apple-alt"></i><input type="file" id="berry-upload" class="hidden" accept="image/*"></label>
-                    <button id="reset-resources-btn" title="Сбросить все ресурсы" class="file-upload-label bg-[#660000] hover:bg-red-700"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-            <hr class="border-[#006600] my-2">
-            <!-- Музыка -->
-            <div>
-                <h4 class="font-semibold mb-2 text-center">Музыка</h4>
-                <div class="flex items-center gap-2">
-                    <label for="audio-upload" class="control-btn flex-grow cursor-pointer"><i class="fas fa-music mr-2"></i>Добавить трек</label>
-                    <input type="file" id="audio-upload" class="hidden" accept="audio/*">
-                    <button id="play-pause-btn" title="Play/Pause" class="control-btn !w-12"><i id="play-pause-icon" class="fas fa-play"></i></button>
-                </div>
-                <div class="mt-2">
-                    <input type="range" id="seek-slider" value="0" class="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer">
-                </div>
-                <div class="flex justify-between text-xs px-1">
-                    <span id="current-time-display">0:00</span>
-                    <span id="duration-display">0:00</span>
-                </div>
-                <div id="track-name-display" class="text-center text-xs mt-1 truncate">...</div>
-                <div class="mt-2">
-                    <label for="volume-slider" class="sr-only">Громкость</label>
-                    <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                </div>
-            </div>
-            <hr class="border-[#006600] my-2">
-            <!-- Механика -->
-            <h4 class="font-semibold text-lg w-full text-center mb-2">Механика Игры</h4>
-            <div class="grid grid-cols-2 gap-x-8 gap-y-4">
-                <div>
-                    <label for="berry-count-slider" class="text-sm">Количество ягод: <span id="berry-count-display">1</span></label>
-                    <input type="range" id="berry-count-slider" min="1" max="20" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                </div>
-                <div>
-                    <label for="min-distance-slider" class="text-sm">Мин. дальность: <span id="min-distance-display">3</span></label>
-                    <input type="range" id="min-distance-slider" min="1" max="100" value="3" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                </div>
-                <div>
-                    <label for="max-distance-slider" class="text-sm">Макс. дальность: <span id="max-distance-display">13</span></label>
-                    <input type="range" id="max-distance-slider" min="1" max="100" value="13" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                </div>
-                <div>
-                     <label for="grid-size-slider" class="text-sm">Размер сетки: <span id="grid-size-display">10x10</span></label>
-                     <input type="range" id="grid-size-slider" min="6" max="40" value="10" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                </div>
-                <div>
-                    <label for="zoom-slider" class="text-sm">Увеличение: <span id="zoom-display">1x</span></label>
-                    <input type="range" id="zoom-slider" min="1" max="30" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                </div>
-                <div>
-                    <label for="finish-position-slider" class="text-sm">Финишная позиция: <span id="finish-position-display">Центр</span></label>
-                    <input type="range" id="finish-position-slider" min="0" max="4" value="2" step="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                    <div class="flex justify-between text-xs mt-1">
-                        <span>ТЛ</span><span>ТП</span><span>Ц</span><span>ЛН</span><span>ПН</span>
-                    </div>
-                </div>
-                <div>
-                    <label for="fade-slider" class="text-sm">Затухание: <span id="fade-display">0.1 с</span></label>
-                    <input type="range" id="fade-slider" min="1" max="40" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                </div>
-            </div>
-        </div>
 
-        <!-- Центральная колонка с игрой -->
-        <div id="app-container">
-            <div id="game-area" class="bg-black rounded-lg relative idle-highlight">
-                <canvas id="game-canvas" class="absolute top-0 left-0 w-full h-full"></canvas>
-            </div>
-            <div id="modal"></div>
-        </div>
 
-        <!-- Правая колонка -->
-        <div id="right-column" class="flex flex-col gap-4 p-4 bg-[#001100] rounded-lg text-[#00ff00] w-[380px]">
-             <!-- Настройки пути -->
-            <h4 class="font-semibold">Настройки пути</h4>
-            <div class="flex items-center gap-2">
-                <select id="path-select" class="w-full p-2 text-xs bg-gray-700 border border-[#006600] rounded"></select>
-                <button id="load-path-btn" title="Загрузить путь" class="control-btn !w-10 !h-8"><i class="fas fa-folder-open"></i></button>
-                <input type="file" id="path-file-input" class="hidden" accept=".json">
-            </div>
-            <label for="path-input" class="text-xs mt-2">Алгоритм движения (JSON):</label>
-            <textarea id="path-input" rows="5" class="w-full p-2 text-xs bg-gray-700 border border-[#006600] rounded" placeholder="[[0,0],[0,1]...]"></textarea>
-            <div class="flex gap-2">
-                <button id="apply-path-btn" class="w-full text-sm px-3 py-2 flex-grow bg-blue-600 hover:bg-[#006600] rounded transition-colors">Применить</button>
-                <button id="save-path-btn" class="w-full text-sm px-3 py-2 flex-grow bg-[#004400] hover:bg-[#006600] rounded transition-colors">Сохранить</button>
-            </div>
-             <div class="flex items-center gap-2 mt-2">
-                <input type="checkbox" id="show-path-checkbox" class="form-checkbox h-5 w-5 bg-gray-700 border-[#006600] rounded text-blue-500 focus:ring-[#00ff00]">
-                <label for="show-path-checkbox" class="text-[#00ff00] text-sm">Показать путь</label>
-             </div>
-             <hr class="border-[#006600] my-2">
-             <!-- Визуал и Запись -->
-             <h4 class="font-semibold text-lg w-full text-center mb-2">Визуал и Запись</h4>
-             <div class="grid grid-cols-2 gap-x-8 gap-y-4">
-                <div>
-                    <h4 class="font-semibold mb-2">Формат записи</h4>
-                    <div class="flex items-center gap-4">
-                        <input type="radio" id="format-webm" name="record-format" value="webm" class="form-radio h-4 w-4 text-blue-500">
-                        <label for="format-webm" class="text-sm">WebM</label>
-                        <input type="radio" id="format-mp4" name="record-format" value="mp4" class="form-radio h-4 w-4 text-blue-500" checked>
-                        <label for="format-mp4" class="text-sm">MP4</label>
+                <!-- Ресурсы -->
+                <div class="setting-group">
+                    <h4 class="setting-title">Ресурсы</h4>
+                    <div id="previews" class="grid grid-cols-5 gap-2">
+                        <label class="file-upload-label" title="Добавить фон (нижний слой)"><i class="fas fa-image"></i><input type="file" id="image-upload" class="hidden" accept="image/*,video/*"></label>
+                        <label class="file-upload-label" title="Добавить рубашку (верхний слой)"><i class="fas fa-layer-group"></i><input type="file" id="cover-upload" class="hidden" accept="image/*,video/*"></label>
+                        <label class="file-upload-label" title="Добавить голову змейки"><i class="fas fa-dragon"></i><input type="file" id="snake-head-upload" class="hidden" accept="image/*"></label>
+                        <label class="file-upload-label" title="Добавить ягоду"><i class="fas fa-apple-alt"></i><input type="file" id="berry-upload" class="hidden" accept="image/*"></label>
+                        <button id="reset-resources-btn" title="Сбросить все ресурсы" class="file-upload-label btn-danger"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
-                <div id="recording-status" class="pt-4 border-t border-[#003300] col-span-2">
-                     <div class="flex items-center justify-between mb-2">
-                         <p id="progress-text" class="text-[#00ff00] text-sm font-mono">Готов к записи</p>
-                         <div class="flex items-center gap-2">
-                             <button id="abort-recording-btn" title="Отменить запись" class="hidden control-btn !w-8 !h-8 bg-red-600 hover:bg-red-700 !text-sm"><i class="fas fa-stop"></i></button>
-                             <a id="download-button" title="Скачать видео" class="hidden control-btn !w-8 !h-8 bg-[#004400] hover:bg-[#006600] !text-sm"><i class="fas fa-download"></i></a>
+
+                <!-- Музыка -->
+                <div class="setting-group">
+                    <h4 class="setting-title">Музыка</h4>
+                    <div class="flex items-center gap-2">
+                        <label for="audio-upload" class="btn btn-icon flex-grow cursor-pointer"><i class="fas fa-music mr-2"></i>Трек</label>
+                        <input type="file" id="audio-upload" class="hidden" accept="audio/*">
+                        <button id="play-pause-btn" title="Play/Pause" class="btn !w-12"><i id="play-pause-icon" class="fas fa-play"></i></button>
+                    </div>
+                    <div id="track-name-display" class="text-center text-xs mt-2 truncate">...</div>
+                    <input type="range" id="seek-slider" value="0" class="w-full h-1 mt-2">
+                     <div class="flex justify-between text-xs px-1">
+                        <span id="current-time-display">0:00</span>
+                        <span id="duration-display">0:00</span>
+                    </div>
+                    <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1" class="w-full h-2 mt-2">
+                </div>
+            </div>
+        </aside>
+
+        <!-- Центральная часть (Игра) -->
+        <main class="main-content">
+            <div id="app-container">
+                <div id="game-area" class="bg-black rounded-lg relative idle-highlight">
+                    <canvas id="game-canvas" class="absolute top-0 left-0 w-full h-full"></canvas>
+                </div>
+                <div id="modal"></div>
+            </div>
+        </main>
+
+        <!-- Правая боковая панель -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3 class="sidebar-title">ПАРАМЕТРЫ</h3>
+            </div>
+            <div class="sidebar-content">
+                <!-- Настройки пути -->
+                <div class="setting-group">
+                    <h4 class="setting-title">Настройки пути</h4>
+                    <div class="flex items-center gap-2">
+                        <select id="path-select" class="select-css flex-grow"></select>
+                        <button id="load-path-btn" title="Загрузить путь" class="btn btn-icon !w-10 !h-8"><i class="fas fa-folder-open"></i></button>
+                        <input type="file" id="path-file-input" class="hidden" accept=".json">
+                    </div>
+                    <textarea id="path-input" rows="4" class="input-css w-full mt-2" placeholder="[[0,0],[0,1]...]"></textarea>
+                    <div class="flex gap-2 mt-2">
+                        <button id="apply-path-btn" class="btn flex-grow">Применить</button>
+                        <button id="save-path-btn" class="btn flex-grow">Сохранить</button>
+                    </div>
+                    <div class="flex items-center gap-2 mt-2">
+                        <input type="checkbox" id="show-path-checkbox" class="checkbox-css">
+                        <label for="show-path-checkbox">Показать путь</label>
+                    </div>
+                </div>
+
+                <!-- Механика Игры -->
+                <div class="setting-group">
+                    <h4 class="setting-title">Механика Игры</h4>
+                    <div class="setting">
+                        <label for="grid-size-slider">Сетка: <span id="grid-size-display">10x10</span></label>
+                        <input type="range" id="grid-size-slider" min="6" max="40" value="10">
+                    </div>
+                    <div class="setting">
+                        <label for="berry-count-slider">Ягоды: <span id="berry-count-display">1</span></label>
+                        <input type="range" id="berry-count-slider" min="1" max="20" value="1">
+                    </div>
+                     <div class="setting">
+                        <label for="min-distance-slider">Мин. дальн.: <span id="min-distance-display">3</span></label>
+                        <input type="range" id="min-distance-slider" min="1" max="100" value="3">
+                    </div>
+                    <div class="setting">
+                        <label for="max-distance-slider">Макс. дальн.: <span id="max-distance-display">13</span></label>
+                        <input type="range" id="max-distance-slider" min="1" max="100" value="13">
+                    </div>
+                </div>
+
+                <!-- Настройки Записи -->
+                <div class="setting-group">
+                    <h4 class="setting-title">Визуал и Запись</h4>
+                     <div id="recording-status" class="mb-2">
+                         <p id="progress-text" class="text-sm text-center">Готов к записи</p>
+                         <div class="w-full h-2 bg-black rounded overflow-hidden mt-1 border border-green-500">
+                             <div id="progress-bar" class="h-full bg-green-500 rounded transition-all duration-100"></div>
+                         </div>
+                         <div class="flex items-center justify-center gap-2 mt-2">
+                             <button id="abort-recording-btn" title="Отменить запись" class="hidden btn btn-danger !w-8 !h-8"><i class="fas fa-stop"></i></button>
+                             <a id="download-button" title="Скачать видео" class="hidden btn !w-8 !h-8"><i class="fas fa-download"></i></a>
                          </div>
                      </div>
-                     <div id="progress-bar-container" class="w-full h-2 bg-gray-600 rounded overflow-hidden">
-                         <div id="progress-bar" class="h-full bg-blue-500 rounded transition-all duration-100"></div>
-                     </div>
-                </div>
-
-                <div class="col-span-2 border-t border-[#003300] pt-4">
-                    <h4 class="font-semibold mb-2 text-center">Эффекты Слоев</h4>
-                </div>
-
-                <!-- Background Layer -->
-                <div class="col-span-1">
-                    <h5 class="font-semibold mb-2">Нижний слой (Фон)</h5>
-                    <div class="flex items-center gap-2 mb-2">
-                        <input type="checkbox" id="toggle-volume-effect-bg" class="form-checkbox h-5 w-5 bg-gray-700 border-[#006600] rounded text-blue-500 focus:ring-[#00ff00]">
-                        <label for="toggle-volume-effect-bg" class="text-sm">Эффект объема</label>
+                    <div class="setting">
+                        <label>Формат</label>
+                        <div class="flex gap-4 items-center">
+                           <input type="radio" id="format-webm" name="record-format" value="webm" class="radio-css"><label for="format-webm">WebM</label>
+                           <input type="radio" id="format-mp4" name="record-format" value="mp4" class="radio-css" checked><label for="format-mp4">MP4</label>
+                        </div>
                     </div>
-                    <label for="volume-style-select-bg" class="text-sm block mb-1">Стиль:</label>
-                    <select id="volume-style-select-bg" class="w-full p-1 text-xs bg-gray-700 border border-[#006600] rounded">
-                        <option value="default" selected>Подушки</option>
-                        <option value="glint">Блики</option>
-                        <option value="vignette">Затемнение</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="volume-intensity-slider-bg" class="text-sm">Интенсивность: <span id="volume-intensity-display-bg">20%</span></label>
-                    <input type="range" id="volume-intensity-slider-bg" min="0" max="100" value="20" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                </div>
-
-                <!-- Cover Layer -->
-                <div class="col-span-1">
-                    <h5 class="font-semibold mb-2">Верхний слой (Рубашка)</h5>
-                    <div class="flex items-center gap-2 mb-2">
-                        <input type="checkbox" id="toggle-volume-effect-cover" class="form-checkbox h-5 w-5 bg-gray-700 border-[#006600] rounded text-blue-500 focus:ring-[#00ff00]">
-                        <label for="toggle-volume-effect-cover" class="text-sm">Эффект объема</label>
+                    <div class="setting">
+                        <label for="zoom-slider">Увеличение: <span id="zoom-display">1x</span></label>
+                        <input type="range" id="zoom-slider" min="1" max="30" value="1">
                     </div>
-                    <label for="volume-style-select-cover" class="text-sm block mb-1">Стиль:</label>
-                    <select id="volume-style-select-cover" class="w-full p-1 text-xs bg-gray-700 border border-[#006600] rounded">
-                        <option value="default" selected>Подушки</option>
-                        <option value="glint">Блики</option>
-                        <option value="vignette">Затемнение</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="volume-intensity-slider-cover" class="text-sm">Интенсивность: <span id="volume-intensity-display-cover">20%</span></label>
-                    <input type="range" id="volume-intensity-slider-cover" min="0" max="100" value="20" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                </div>
-
-                <div class="col-span-2 border-t border-[#003300] pt-4"></div>
-
-                <div class="col-span-1">
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" id="toggle-rainbow-border" class="form-checkbox h-5 w-5 bg-gray-700 border-[#006600] rounded text-blue-500 focus:ring-[#00ff00]">
-                        <label for="toggle-rainbow-border" class="text-sm">Радужная окантовка</label>
+                    <div class="setting">
+                        <label for="fade-slider">Затухание: <span id="fade-display">0.1 с</span></label>
+                        <input type="range" id="fade-slider" min="1" max="40" value="1">
+                    </div>
+                     <div class="setting">
+                        <label for="finish-position-slider">Финиш: <span id="finish-position-display">Центр</span></label>
+                        <input type="range" id="finish-position-slider" min="0" max="4" value="2" step="1">
                     </div>
                 </div>
-                <div>
-                    <label for="rainbow-border-slider" class="text-sm">Толщина: <span id="rainbow-border-display">1px</span></label>
-                    <input type="range" id="rainbow-border-slider" min="1" max="100" value="1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                </div>
-             </div>
-        </div>
-
+            </div>
+        </aside>
     </div>
 
-    <script src="js/state.js"></script>
-    <script src="js/dom.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/music.js"></script>
-    <script src="js/media.js"></script>
-    <script src="js/path.js"></script>
-    <script src="js/game.js"></script>
-    <script src="js/recorder.js"></script>
-    <script src="js/events.js"></script>
-    <script src="script.js"></script>
+    <script src="../matrix.js"></script>
+    <script src="js/snake_redesigned.js" defer></script>
 </body>
 </html>
