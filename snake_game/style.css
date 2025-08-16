@@ -77,7 +77,28 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    padding-right: 10px; /* Add padding for scrollbar */
 }
+
+/* --- Стилизация скроллбара --- */
+.sidebar-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.5);
+    border-left: 1px solid var(--border-color);
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border: 2px solid var(--bg-color);
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+    background-color: #0f0;
+}
+
 
 /* --- Группы настроек --- */
 .setting-group {
@@ -293,6 +314,7 @@ input[type="range"]::-webkit-slider-thumb {
     transform: scale(1.1);
 }
 
+/* --- Вспомогательные классы --- */
 .grid { display: grid; }
 .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
